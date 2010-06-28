@@ -95,8 +95,9 @@ module Harmony
     class Window 
       extend Forwardable
       
-      attr_reader :browser
-      def_delegators :@browser, :load, :evaluate, :document
+      attr_reader :run_time
+      def_delegators :@run_time, :evaluate, :load
+      def_delegators :@browser, :document
       
       def initialize(uri='about:blank')
         open(uri)
@@ -112,6 +113,7 @@ module Harmony
       
       def open(uri)
         @browser = run_time.evaluate("window.open('#{uri}')")
+        run_time
       end
       
       def self.from_uri(uri)
@@ -122,7 +124,7 @@ module Harmony
         Tempfile.open('harmony') {|f| f << document; @path = f.path }
         new("file://#{@path}")
       end
-
+      
       def self.blank
         new
       end

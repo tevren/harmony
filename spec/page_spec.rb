@@ -8,7 +8,7 @@ describe Harmony::Page do
   end
   
   describe 'api' do
-    CLASS_METHODS = [:fetch, :new]
+    CLASS_METHODS =    [:fetch, :new]
     INSTANCE_METHODS = [:window, :document, :execute_js, :x]
     
     CLASS_METHODS.each do |page_method|
