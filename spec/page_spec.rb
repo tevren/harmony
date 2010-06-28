@@ -119,20 +119,16 @@ describe Harmony::Page do
   end
   
   describe 'document context' do
-    before do
-      pending 
-    end
-    
-    it 'should keep a window/browser run time within the same page' do
-      @blank.window.run_time.should == @blank.window.run_time
-    end
-    
     it 'should use a different window for each page' do
       @blank.window.should_not === Page.new.window
     end
     
     it 'should use a different runtime for each page' do
       @blank.window.run_time.should_not === Page.new.window.run_time
+    end
+    
+    it 'should keep a window/browser run time within the same page' do
+      @blank.window.run_time.should == @blank.window.run_time
     end
   end 
   

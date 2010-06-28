@@ -1,5 +1,6 @@
 require 'pathname'
 require 'tempfile'
+require 'forwardable'
 
 require 'johnson/tracemonkey'
 require 'envjs/runtime'
@@ -10,28 +11,40 @@ module Harmony
     # Window factory
     #
     # @private
-    module Window #:nodoc:
-      extend self
-
-      # Cache the initial runtime. Parsing env.js (done automatically when
-      # Envjs::Runtime is extended) takes a while, so we only want to do this
-      # once.
-      #
-      # @private
-      BASE_RUNTIME = Johnson::Runtime.new
-      BASE_RUNTIME.extend(Envjs::Runtime)
-
-      def from_uri(uri)
-        BASE_RUNTIME.evaluate("window.open('#{uri}')")
+    class Window 
+      extend Forwardable
+      
+      attr_reader :browser
+      def_delegators :@browser, :load, :evaluate, :document
+      
+      def initialize(uri='about:blank')
+        
+        open(uri)
+      end
+      
+      def run_time
+        unless @run_time 
+          @run_time = Johnson::Runtime.new
+          @run_time.extend Envjs::Runtime
+        end
+        @run_time
+      end
+      
+      def open(uri)
+        @browser = run_time.evaluate("window.open('#{uri}')")
+      end
+      
+      def self.from_uri(uri)
+        new(uri)
       end
 
-      def from_document(document)
+      def self.from_document(document)
         Tempfile.open('harmony') {|f| f << document; @path = f.path }
-        from_uri("file://#{@path}")
+        new("file://#{@path}")
       end
 
-      def blank
-        from_uri('about:blank')
+      def self.blank
+        new
       end
     end
 
