@@ -7,47 +7,14 @@ require 'envjs/runtime'
 
 module Harmony
   class Page
-
-    # Window factory
+    # DOM document's `window` object. Equivalent to the return value of
+    # `page.execute_js('window')`
     #
-    # @private
-    class Window 
-      extend Forwardable
-      
-      attr_reader :browser
-      def_delegators :@browser, :load, :evaluate, :document
-      
-      def initialize(uri='about:blank')
-        
-        open(uri)
-      end
-      
-      def run_time
-        unless @run_time 
-          @run_time = Johnson::Runtime.new
-          @run_time.extend Envjs::Runtime
-        end
-        @run_time
-      end
-      
-      def open(uri)
-        @browser = run_time.evaluate("window.open('#{uri}')")
-      end
-      
-      def self.from_uri(uri)
-        new(uri)
-      end
-
-      def self.from_document(document)
-        Tempfile.open('harmony') {|f| f << document; @path = f.path }
-        new("file://#{@path}")
-      end
-
-      def self.blank
-        new
-      end
-    end
-
+    # @return [Object]
+    #   window DOM object
+    #
+    attr_reader :window
+    
     # Create page from remote document.
     #
     # @example
@@ -64,7 +31,7 @@ module Harmony
     #
     def self.fetch(uri)
       page = new
-      page.instance_variable_set(:@window, Window.from_uri(uri))
+      page.window.open(uri)
       page
     end
 
@@ -75,7 +42,7 @@ module Harmony
     #   structure: `<html><head><title></title></head><body></body></html>`
     #
     def initialize(document=nil)
-      @window = Window.from_document(document) if document
+      @window = document ? Window.from_document(document) : Window.blank
     end
 
     # Load one or more javascript files in page's context
@@ -104,16 +71,6 @@ module Harmony
     end
     alias :x :execute_js
 
-    # DOM document's `window` object. Equivalent to the return value of
-    # `page.execute_js('window')`
-    #
-    # @return [Object]
-    #   window DOM object
-    #
-    def window
-      @window ||= Window.blank
-    end
-
     # Convenience method, equivalent to the return value of
     # `page.execute_js('window.document')`
     #
@@ -130,6 +87,45 @@ module Harmony
     #
     def to_html
       document.innerHTML
+    end
+    
+    # Window factory
+    #
+    # @private
+    class Window 
+      extend Forwardable
+      
+      attr_reader :browser
+      def_delegators :@browser, :load, :evaluate, :document
+      
+      def initialize(uri='about:blank')
+        open(uri)
+      end
+      
+      def run_time
+        unless @run_time 
+          @run_time = Johnson::Runtime.new
+          @run_time.extend Envjs::Runtime
+        end
+        @run_time
+      end
+      
+      def open(uri)
+        @browser = run_time.evaluate("window.open('#{uri}')")
+      end
+      
+      def self.from_uri(uri)
+        new(uri)
+      end
+
+      def self.from_document(document)
+        Tempfile.open('harmony') {|f| f << document; @path = f.path }
+        new("file://#{@path}")
+      end
+
+      def self.blank
+        new
+      end
     end
   end
 end
