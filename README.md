@@ -1,4 +1,4 @@
-Harmony
+Harmony - the memory reduced version ...
 =======
 
                        .,ad88888888baa,
@@ -21,89 +21,19 @@ Harmony
                     ""88888888888888888P"
                          """"""""""""
 
-Summary
+Why this new version of an already great gem?
 -------
 
-Harmony provides a simple DSL to execute javascript + DOM code within ruby.
+We, at Cohuman, have been using Harmony in our Rspec text suite for javascript unit testing. For performance reasons, the original Harmony gem instantiated one Johnson js runtime per Harmony universe. Envjs was loaded into the runtime once and then each page was instantiated and loaded into this singleton runtime. This lead to a memory explosion since none of the pages created in our test suite are released until the entire suite finished running. Our 700 tests were taking over a gig of memory :(
 
-Examples
+This is an experimental version of Harmony that instantiates a new Johnson runtime with Envjs for each page created. This means that we maintain the unit test isolation that Harmony pages provide while allowing each page to be garbage collected after the test is run. The penalty is, of course, performance. Creating a new Johnson runtime and loading it with the Envjs methods takes time.
+
+Ideally, Harmony should allow configuration for performance or memory optimization. Should there be demand we will make it happen!
+
+
+Get the original, and learn more about the API
 --------
-
-### Simple Javascript Parsing
-
-    require 'harmony'
-
-    page = Harmony::Page.new(<<-HTML)
-      <html>
-        <head>
-          <title>Foo</title>
-        </head>
-        <body></body>
-      </html>
-    HTML
-
-    page.execute_js("1+1")            #=> 2
-    page.execute_js("document.title") #=> "Foo"
-
-The Page object's `#execute_js` method (aliased as `#x` for convenience) takes a
-string of javascript code, executes it and returns the last statement's value
-(just like a ruby method).
-
-### Javascript Unit Tests
-
-One interesting use of Harmony is to test your javascript code within your ruby
-application's own tests (test/unit, minitest, RSpec, nanotest, etc). Which
-consequently means that you can now run browser-less, fully command-line
-based, DOM-javascript tests.
-
-    require 'test/unit'
-    require 'harmony'
-
-    class JavascriptTest < Test::Unit::TestCase
-      def setup
-        @page = Harmony::Page.new
-        @page.load('public/javascripts/foo.js')
-      end
-
-      def test_foo
-        assert_equal "world", @page.execute_js(<<-JS)
-          foo = new Foo;
-          foo.hello();
-        JS
-      end
-    end
-
-### DOM Handling
-
-Don't be affraid to throw in your favorite client-side js framework, like
-JQuery or Prototype. And notice that scripts linked to in `<script>` tags will
-automatically get pulled in.
-
-    require 'harmony'
-
-    page = Harmony::Page.new(<<-HTML)
-      <html>
-        <head>
-          <script src="javascripts/jquery.js" type="text/javascript"></script>
-        </head>
-        <body>
-          <div id="widget">ohaie</div>
-        </body>
-      </html>
-    HTML
-
-    page.execute_js("$('#widget').innerHTML") #=> "ohaie"
-
-### Fetching Documents
-
-Use `Harmony::Page.fetch(uri)` to create a page from a remote document.
-
-    require 'harmony'
-
-    page = Harmony::Page.fetch('http://example.com')
-    page.execute_js('document.title') #=> "Example Web Page"
-
-`fetch` also accepts "file://" uris.
+http://github.com/mynyml/harmony
 
 Install
 -------
@@ -113,50 +43,8 @@ Install
     gem install stackdeck
     gem install johnson -v "2.0.0.pre3"
 
-    gem install harmony
-
-See Also
---------
-
-* [holygrail][20]: Harmony plugin for Rails tests
-
-Acknowledgement
----------------
-
-Harmony is a thin DSL wrapper around three **amazing** libs, [Johnson][1],
-[env.js][30] and [Envjs][2] . The authors of those libs have been doing a huge
-amount of great work for quite a while, so please go recommend them on
-WorkingWithRails right now and/or follow them on github:
-
-  [jbarnette][3], [tenderlove][4], [smparkes][5], [wycats][6], [matthewd][7], [thatcher][8], [jeresig][9]
-
-Special thanks go to [smparkes][10] for his patient help, and for providing the
-last puzzle pieces that made [everything][12] [work][11] [together][13].
-
-Links
------
-* code: <http://github.com/mynyml/harmony>
-* docs: <http://yardoc.org/docs/mynyml-harmony>
-* wiki: <http://wiki.github.com/mynyml/harmony>
-* bugs: <http://github.com/mynyml/harmony/issues>
-
-
-
-YinYang ASCII art is © Normand Veilleux (nveilleuATemr1.emrDOTca)
-
-
-[1]:  http://github.com/jbarnette/johnson/
-[2]:  http://env-js.appspot.com/
-[3]:  http://www.workingwithrails.com/person/10668-john-barnette
-[4]:  http://github.com/tenderlove/
-[5]:  http://www.workingwithrails.com/person/11739-steven-parkes
-[6]:  http://www.workingwithrails.com/person/1805-yehuda-katz
-[7]:  http://www.workingwithrails.com/person/6221-matthew-draper
-[8]:  http://github.com/thatcher/
-[9]:  http://ejohn.org/
-[10]: http://github.com/smparkes/
-[11]: http://github.com/smparkes/env-js/commit/49abe259813a505b0761e6d31dde671344b5bc87#L0R279
-[12]: http://groups.google.com/group/envjs/msg/4ac719f7db7912f5
-[13]: http://gemcutter.org/gems/envjs
-[20]: http://github.com/mynyml/holygrail
-[30]: http://github.com/thatcher/env-js
+		# download this version of the gem and install it manually:
+    git clone http://github.com/baccigalupi/harmony.git
+		cd harmony 
+		sudo rake install
+		
