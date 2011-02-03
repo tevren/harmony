@@ -1,3 +1,6 @@
+require 'bundler'
+Bundler::GemHelper.install_tasks
+
 def gem_opt
   defined?(Gem) ? "-rubygems" : ""
 end
@@ -36,4 +39,3 @@ task :yardoc do
   require 'yard'
   YARD::CLI::Yardoc.run *%w( --no-private --no-highlight -o doc/yard --readme README.md --markup markdown - LICENSE )
 end
-

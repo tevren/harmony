@@ -9,3 +9,4 @@ sanity_check.rb
 *.swp
 *.swo
 *~
+Gemfile.lock

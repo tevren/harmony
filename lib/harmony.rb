@@ -1,5 +1,4 @@
 module Harmony
-  VERSION = '0.5.6'
-
+  require 'harmony/version'
   autoload :Page, 'harmony/page'
 end
