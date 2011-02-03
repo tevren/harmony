@@ -1,4 +1,6 @@
+pkg/*
 *.gem
+.bundle
 .yardoc/
 doc/
 TODO
