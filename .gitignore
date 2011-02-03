@@ -4,3 +4,6 @@ doc/
 TODO
 .yard_issues.md
 sanity_check.rb
+*.swp
+*.swo
+*~
