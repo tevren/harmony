@@ -8,10 +8,21 @@ end
 # --------------------------------------------------
 # Tests
 # --------------------------------------------------
-task(:default => "test:all")
 
+# new rspec version
+begin 
+  require 'spec/rake/spectask'
+  Spec::Rake::SpecTask.new(:spec) do |spec|
+    spec.libs << 'lib' << 'spec'
+    spec.spec_files = FileList['spec/**/*_spec.rb']
+  end
+  task :default => :spec
+rescue
+  task :default => "test:all"
+end
+
+# original minitest version
 namespace(:test) do
-
   desc "Run all tests"
   task(:all) do
     exit system("ruby #{gem_opt} -I.:lib:test -e'%w( #{Dir['test/**/*_test.rb'].join(' ')} ).each {|p| require p }'")
