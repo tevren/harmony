@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'johnson', '2.0.0.pre3'
   s.add_dependency 'envjs', '0.3.7'
   s.add_development_dependency 'minitest'
+  s.add_development_dependency 'rspec', '~> 2.4.0'
 end
